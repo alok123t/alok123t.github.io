@@ -12,11 +12,11 @@ var svg_polygon = d3.select("#polygon")
 
 var svg_line = d3.line();
 
-var g_nodes = svg_polygon.append("g");
 var g_edges = svg_polygon.append("g");
 g_edges.append("path")
   .attr("id", "path_poly");
 var tr_edges = svg_polygon.append("g");
+var g_nodes = svg_polygon.append("g");
 
 var thresholdSamePoint = 2000;
 
@@ -28,7 +28,7 @@ d3.selection.prototype.translate = function(a) {
 };
 
 function adjust(p) {
-  return [Math.round(p[0]), Math.round(p[1])];
+  return [Math.round(p[0]), Math.round(p[1])-30];
 }
 
 function distance(p0, p1) {
@@ -37,36 +37,56 @@ function distance(p0, p1) {
   return (dx*dx) + (dy*dy);
 }
 
-function tooClose(p) {
-  var i = points.length == 1 ? 0 : 1;
-  for (; i < points.length; i++) {
-    if (distance(points[i], p) < thresholdSamePoint) return true;
-  }
-  return false;
-}
-
 function closePolygon(pEnd) {
   var pStart = points[0];
   var d = distance(pStart, pEnd);
   return d < thresholdSamePoint;
 }
 
-function addPoint(p) {
-  points.push(p);
+function updatePoint(p) {
+  var cur = g_nodes.select("#latest");
+  if (cur.size()) {
+    cur.translate(p).datum(p);
+  }
+  points[points.length-1] = p;
+  return cur;
+}
 
+function addPoint(p) {
+  updatePoint(p).attr("id", null);
+
+  var l = d3.select("#last");
+  if (done) {
+    l.text("1");
+  }
+  l.attr("id", null);
+}
+
+function displayPoint(p) {
+  var curPoint = g_nodes.select("#latest");
+  if (curPoint.size()) {
+    updatePoint(p);
+  }
+  else {
+    points.push(p);
+    var curText = done ? 1 : points.length;
+    var g_n = g_nodes.append("g")
+      .attr("class", "vertex")
+      .attr("id", "latest")
+      .translate(p);
+      g_n.append("circle")
+        .attr("r", 20);
+      g_n.append("text").text(curText.toString())
+        .attr("dx", "-5px")
+        .attr("dy", "5px")
+        .attr("id", "last");
+  }
+}
+
+function displayLine() {
   g_edges.select("#path_poly")
     .datum(points)
     .attr("d", svg_line);
-
-  var curText = done ? 1 : points.length;
-  var g_n = g_nodes.append("g")
-    .attr("class", "vertex")
-    .translate(p);
-  g_n.append("circle")
-    .attr("r", 20);
-  g_n.append("text").text(curText.toString())
-    .attr("dx", "-5px")
-    .attr("dy", "5px");
 }
 
 function triangulate() {
@@ -83,10 +103,9 @@ function triangulate() {
   }
 }
 
-svg_polygon.on("click", function() {
+var onClick = function() {
   if (done) return;
   var newPoint = adjust(d3.mouse(this));
-  if (tooClose(newPoint)) return;
   if (points.length >= 3) {
     if (closePolygon(newPoint)) {
       done = true;
@@ -94,5 +113,16 @@ svg_polygon.on("click", function() {
     }
   }
   addPoint(newPoint);
+  displayLine();
   if (done) triangulate();
-});
+}
+
+var mouseMove = function() {
+  if (done) return;
+  var newPoint = adjust(d3.mouse(this));
+  displayPoint(newPoint);
+  displayLine();
+}
+
+svg_polygon.on("click", onClick);
+svg_polygon.on("mousemove", mouseMove);
