@@ -4,7 +4,11 @@ var intViewportHeight = window.innerHeight;
 var margin = {top: 20, right: 50, bottom: 30, left: 60};
 var width = intViewportWidth - margin.left - margin.right;
 var height = intViewportHeight - margin.top - margin.bottom;
-// console.log("width", width, "height", height);
+
+d3.select("svg")
+  .append("rect")
+  .attr("width", width-50)
+  .attr("height", height);
 
 var svg_polygon = d3.select("#polygon")
   .attr("width", width + margin.right)
@@ -28,7 +32,7 @@ d3.selection.prototype.translate = function(a) {
 };
 
 function adjust(p) {
-  return [Math.round(p[0]), Math.round(p[1])-30];
+  return [Math.round(p[0]), Math.round(p[1])];
 }
 
 function distance(p0, p1) {
