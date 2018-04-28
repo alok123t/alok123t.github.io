@@ -93,7 +93,16 @@ function displayLine() {
     .attr("d", svg_line);
 }
 
+function dist(p1, p2) {
+  return distance(points[p1], points[p2]);
+}
+
+function cost(p1, p2, p3) {
+  return Math.max(dist(p1, p2), dist(p2, p3), dist(p3, p1));
+}
+
 function triangulate() {
+  /*
   for (var i = 0; i < points.length; i+=2) {
     var tr_nodes = [];
     if (i+2 < points.length) {
@@ -104,6 +113,66 @@ function triangulate() {
         .attr("id", "path_tr")
         .attr("d", svg_line);
     }
+  }
+  */
+  var n = points.length-1;
+  var dp_table = new Array(n);
+  var pos_table = new Array(n);
+  for (var i = 0; i < n; i++) {
+    dp_table[i] = new Array(n);
+    pos_table[i] = new Array(n);
+  }
+
+  for (var gap = 0; gap < n; gap++) {
+    for (var i = 0, j = gap; j < n; i++, j++) {
+      if (j < i+2) {
+        dp_table[i][j] = 0.0;
+        pos_table[i][j] = -1;
+        continue;
+      }
+      dp_table[i][j] = Infinity;
+      pos_table[i][j] = -1;
+      for (var k = i+1; k < j; k++) {
+        // console.log([i,k,j,cost(i,k,j)]);
+        var cur_cost = dp_table[i][k] + dp_table[k][j] + cost(i, k, j);
+        if (cur_cost < dp_table[i][j]) {
+          dp_table[i][j] = cur_cost;
+          pos_table[i][j] = k;
+        }
+      }
+    }
+  }
+
+  // for (var i = 0; i < n; i++) {
+  //   console.log(dp_table[i]);
+  // }
+  var queue = [];
+  queue.push([0, n-1]);
+  while (queue.length != 0) {
+    var top = queue.shift();
+    a = top[0];
+    b = top[1];
+    c = pos_table[a][b];
+    console.log(a+1, c+1, b+1)
+
+    if (a != c-1) {
+      var tr_nodes = [];
+      tr_nodes.push(points[a]);tr_nodes.push(points[c]);
+      tr_edges.append("path")
+        .datum(tr_nodes)
+        .attr("id", "path_tr")
+        .attr("d", svg_line);
+    }
+    if (c != b-1) {
+      var tr_nodes = [];
+      tr_nodes.push(points[c]);tr_nodes.push(points[b]);
+      tr_edges.append("path")
+        .datum(tr_nodes)
+        .attr("id", "path_tr")
+        .attr("d", svg_line);
+    }
+    if (a != c-1) queue.push([a, c]);
+    if (c != b-1) queue.push([c, b]);
   }
 }
 
