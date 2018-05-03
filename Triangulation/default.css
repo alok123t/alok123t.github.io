@@ -1,9 +1,11 @@
 h1 {
+  text-align: center;
   font-family: 'Roboto', sans-serif;
 }
 
 body {
-  background-color: AntiqueWhite ;
+  margin-top: 15px;
+  background-image: url("Images/grid.png");
 }
 
 rect {
@@ -20,16 +22,37 @@ path {
 }
 
 #path_tr {
-  stroke: dodgerblue;
+  stroke: darkorchid;
   stroke-width: 10;
 }
 
 circle {
-  fill: lightcoral;
+  fill: lightsalmon;
   stroke: black;
   stroke-width: 3;
 }
 
 text {
   font-size: 25px;
+}
+
+.drawarea {
+  display: inline-block;
+  border-style: solid;
+  border-width: 1px;
+  width: 75%;
+  height:90%;
+  margin-top: 20px;
+  margin-bottom: 30px;
+  margin-left: 10px;
+}
+
+.textc{
+  font-family: 'Roboto', sans-serif;
+  font-size: 20px;
+  float: left;
+  width: 20%;
+  margin-top: 20px;
+  margin-left: 15px;
+  margin-right: 8px;
 }

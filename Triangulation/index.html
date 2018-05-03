@@ -2,11 +2,28 @@
 <html>
   <head>
     <link rel="stylesheet" type="text/css" href="default.css">
-    <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet'>
+    <link rel="stylesheet" href='https://fonts.googleapis.com/css?family=Roboto'>
   </head>
   <body>
     <h1> Optimal Triangulation</h1>
-    <svg id=polygon></svg>
+    <div>
+      <div class = "textc">
+        <p>
+          <b>CSE 555</b>: <br/>Computational Geometry
+        </p>
+        <p>
+          <b>Project</b>: <br/>Finding Minimum weight optimal triangulation of simple polygons using Dynamic Programming 
+        </p>
+        <p>Draw a simple closed polygon using mouse click (as vertices) and close the polygon</p>
+        <!-- <button onclick="type1()" class = "firstbutton">Minimum weight triangulation</button> -->
+        <button onclick="history.go(0)" class ="refreshbutton"><img src="Images/reload.png"></button>
+      </div>
+      <div class="drawarea">
+        <svg id=polygon>
+        </svg>
+      </div>
+    </div>
+    <!-- <footer>Designed by Alok</footer> -->
     <script src="https://d3js.org/d3.v5.min.js"></script>
     <script src="triangulation.js"></script>
   </body>
